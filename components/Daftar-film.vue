@@ -5,7 +5,7 @@
     </div>
     <div class="slideshow-container">
       <div class="row">
-        <div
+        <div 
           class="col-6"
           v-for="(film, index) in displayedFilms"
           :key="index"
