@@ -105,7 +105,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
-  margin-left: 50px;
+  
 }
 .film-details {
   margin-left: 15px;
