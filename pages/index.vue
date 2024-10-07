@@ -1,6 +1,7 @@
 <template>
   <div>
     <Hero />
+    <DaftarFilm />
   </div>
 </template>
 
