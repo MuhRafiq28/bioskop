@@ -3,7 +3,7 @@
   <div class="text ">
     <h1 class="mb-5">Selamat datang di
       <br><strong>NgeBioskop</strong></h1>
-    <p>Website pemesanan tiket terbaik</p>
+    <p class="text-success">Website pemesanan tiket terbaik</p>
     <button class="btn btn-primary">Pesan</button>
   </div>
   <div class="img py-3">
