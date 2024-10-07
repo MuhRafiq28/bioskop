@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppNabar />
+    <AppNavbar />
     <Hero />
     <DaftarFilm />
     <FilmTayang />
