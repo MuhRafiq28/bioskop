@@ -2,6 +2,7 @@
   <div>
     <AppNabar />
     <Hero />
+    <DaftarFilm />
     <FilmTayang />
   </div>
 </template>
