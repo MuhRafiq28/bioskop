@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppNavbar />
-    <Hero />
+    <Hero class="mt-5" />
     <DaftarFilm />
     <FilmTayang />
   </div>

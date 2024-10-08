@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <b-navbar toggleable="lg" type="dark" variant="dark" class="shadow-sm">
+  <div class="fixed-top">
+    <b-navbar toggleable="lg" type="dark" variant="dark" class="shadow-sm ">
       <div class="container">
         <b-navbar-brand href="#" class="font-weight-bold">NgeBioskop</b-navbar-brand>
 
