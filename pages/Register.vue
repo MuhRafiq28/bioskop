@@ -22,8 +22,6 @@
   </div>
 </template>
 
-
-
 <script>
 export default {
   data() {
@@ -48,6 +46,10 @@ export default {
           role: this.role,
         });
         console.log(response.data);
+
+        // Simpan nama pengguna di localStorage
+        localStorage.setItem('username', this.name); // Menyimpan nama pengguna
+
         alert('Registrasi berhasil!');
         this.$router.push('/login');
       } catch (error) {
@@ -60,8 +62,9 @@ export default {
   },
 };
 </script>
+
 <style scoped>
-.p-13{
+.p-13 {
   padding: 100px;
 }
 .bg-abu {

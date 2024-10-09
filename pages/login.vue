@@ -40,14 +40,17 @@ export default {
         });
         const user = response.data;
 
+        // Simpan nama pengguna di localStorage
+        localStorage.setItem('username', user.name); // Menyimpan nama pengguna
+
         // Simpan data pengguna di Vuex store
         this.$store.dispatch('login', user);
 
         // Role-based navigation
         if (user.role === 'admin') {
-          this.$router.push('/admin-dashboard'); // Arahkan ke halaman admin
+          this.$router.push('/homeadmin'); // Arahkan ke halaman admin
         } else if (user.role === 'user') {
-          this.$router.push('/#'); // Arahkan ke halaman user
+          this.$router.push('/homeuser'); // Arahkan ke halaman user
         } else {
           this.$router.push('/'); // Default halaman
         }
