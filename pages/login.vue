@@ -38,10 +38,12 @@ export default {
           email: this.email,
           password: this.password,
         });
-        const user = response.data;
 
-        // Simpan nama pengguna di localStorage
-        localStorage.setItem('username', user.name); // Menyimpan nama pengguna
+        const user = response.data; // Ambil user data dari response
+
+        // Simpan nama pengguna dan role di localStorage
+        localStorage.setItem('username', user.name);
+        localStorage.setItem('role', user.role); // Simpan role di localStorage
 
         // Simpan data pengguna di Vuex store
         this.$store.dispatch('login', user);
@@ -52,7 +54,7 @@ export default {
         } else if (user.role === 'user') {
           this.$router.push('/homeuser'); // Arahkan ke halaman user
         } else {
-          this.$router.push('/'); // Default halaman
+          this.$router.push('/'); // Halaman default jika role tidak dikenali
         }
       } catch (error) {
         this.error = error.response?.data?.message || 'Login gagal, coba lagi.';
