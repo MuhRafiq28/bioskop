@@ -21,7 +21,7 @@
               <router-link to="/login"><b-button variant="outline-light" class="px-3">Login</b-button></router-link>
             </b-nav-item>
             <b-nav-item v-if="user">
-              <b-button class="px-3 text-dark" style="background: #D9D9D9;">{{ user.name }}</b-button>
+              <b-button class="px-3 text-dark" style="background: #D9D9D9;">{{ user.name }} <b-icon-cart></b-icon-cart></b-button>
             </b-nav-item>
           </b-navbar-nav>
         </b-collapse>
