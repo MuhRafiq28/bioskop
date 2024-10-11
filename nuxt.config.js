@@ -44,6 +44,10 @@ export default {
     baseURL: 'http://localhost:8080',
   },
 
+  plugins: [
+    '~/plugins/bootstrap-vue.js'
+  ],
+
   // Build Configuration
   build: {}
 }
