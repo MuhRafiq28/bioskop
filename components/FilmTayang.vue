@@ -13,9 +13,9 @@
           <h5 class="ml-3 m-0">{{ film.harga }}</h5>
         </div>
         <div class="col col-lg-1 d-flex align-items-end justify-content-between">
-          <button class="btn btn-success float-bottom mt-3 mb-mt-0 mb-3 mr-3">
+          <router-link to="/checkout" class="btn btn-success float-bottom mt-3 mb-mt-0 mb-3 mr-3">
             Pesan
-          </button>
+          </router-link>
         </div>
       </div>
     </div>
