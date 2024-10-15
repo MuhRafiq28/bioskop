@@ -1,4 +1,38 @@
 <template>
+<<<<<<< HEAD
+  <div class="container p-4 mt-3 m-lg-5">
+    <div class="judul">
+      <h1>Film Rekomendasi</h1>
+    </div>
+    <div class="d-flex justify-content-between">
+      <div class="container-car d-flex pt-4 pb-4 align-content-center">
+        <div class="gambar-poster d-flex align-items-center">
+          <img class="poster" src="images/poster-godzila.jpeg" alt="" />
+        </div>
+        <div class="descripsi-poster ml-2 p-4 ">
+          <h1><strong> Godzila X Kong </strong></h1>
+          <p class="m-0"><strong> Si Botak </strong></p>
+          <p class="m-0">Konoha</p>
+          <p class="mt-4">
+            cerita tentang monster yang hidup di intin bumi yang kemudian hari
+            naik ke permukaan bumi yaitu tempat manusia hidup
+          </p>
+        </div>
+      </div>
+
+      <div class="container-car d-flex pt-4 pb-4 align-content-center ml-3">
+        <div class="gambar-poster">
+          <img class="poster" src="images/poster-godzila.jpeg" alt="" />
+        </div>
+        <div class="descripsi-poster ml-2 p-4">
+          <h1><strong> Godzila X Kong </strong></h1>
+          <p class="m-0"><strong> Si Botak </strong></p>
+          <p class="m-0">Konoha</p>
+          <p class="mt-4">
+            cerita tentang monster yang hidup di intin bumi yang kemudian hari
+            naik ke permukaan bumi yaitu tempat manusia hidup
+          </p>
+=======
   <div class="container p-4">
     <div class="judul text-center">
       <h1>Film Rekomendasi</h1>
@@ -18,6 +52,7 @@
               <p class="film-description">{{ film.deskripsi }}</p>
             </div>
           </div>
+>>>>>>> b8e0901da59fa3f8fb3588fe1ed099f640fa4f0b
         </div>
       </div>
     </div>
@@ -26,6 +61,9 @@
 
 <script>
 export default {
+<<<<<<< HEAD
+  nama: "DaftarFilm",
+=======
   name: "DaftarFilm",
   data() {
     return {
@@ -76,6 +114,7 @@ export default {
       }, 3000);
     },
   },
+>>>>>>> b8e0901da59fa3f8fb3588fe1ed099f640fa4f0b
 };
 </script>
 
@@ -85,6 +124,8 @@ export default {
   height: auto;
   border-radius: 10px;
 }
+<<<<<<< HEAD
+=======
 .slideshow-container {
   position: relative;
   max-width: 800px;
@@ -137,4 +178,5 @@ export default {
     width: 80%;
   }
 }
+>>>>>>> b8e0901da59fa3f8fb3588fe1ed099f640fa4f0b
 </style>
