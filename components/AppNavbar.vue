@@ -1,6 +1,8 @@
+navbar
+
 <template>
-  <div class="fixed-top  mt-3 col-12 mb-col-11 ml-0 mb-ml-5">
-    <b-navbar toggleable="lg" class="content shadow-sm p-2 mb-p-0  rounded-5">
+  <div class="fixed-top mt-3 col-12 mb-col-11 ml-0 mb-ml-5">
+    <b-navbar toggleable="lg" class="content shadow-sm p-2 p-md-0  rounded-5">
       <div class="container">
         <b-navbar-brand href="#" class="font-weight-bold">NgeBioskop</b-navbar-brand>
 

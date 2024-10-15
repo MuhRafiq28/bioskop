@@ -1,23 +1,19 @@
 <template>
   <div>
     <AppNavbar />
-    <Hero class="mt-8" />
-    <DaftarFilm />
-    <FilmTayang />
+    <HeroLanding class="mt-8" />
   </div>
 </template>
 
 <script>
 import AppNavbar from '../components/AppNavbar.vue';
-import FilmTayang from '../components/FilmTayang.vue';
-import Hero from '../components/hero.vue';
+import HeroLanding from '../components/landing/HeroLanding.vue';
 
 export default {
   name: 'IndexPage',
   components: {
-    Hero,
+    HeroLanding,
     AppNavbar,
-    FilmTayang
   }
 }
 </script>
