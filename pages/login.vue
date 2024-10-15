@@ -10,7 +10,7 @@
         <div class="mb-3">
           <input v-model="password" placeholder="Masukkan Password" type="password" id="password" required />
         </div>
-        <router-link to="/register"><button class="btn btn-danger mr-2">Daftar</button></router-link>
+        <router-link to="/register"><button type="button" class="btn btn-danger mr-2">Daftar</button></router-link>
         <button type="submit" :disabled="loading" class="btn btn-success">Masuk</button>
         <div v-if="loading">Loading...</div>
         <div v-if="error" style="color: red;">{{ error }}</div>
@@ -41,12 +41,11 @@ export default {
 
         const user = response.data; // Ambil user data dari response
 
-        // Simpan nama pengguna dan role di localStorage
-        localStorage.setItem('username', user.name);
-        localStorage.setItem('role', user.role); // Simpan role di localStorage
+        // Simpan user di localStorage
+        localStorage.setItem('user', JSON.stringify(user)); // Simpan objek user ke localStorage
 
         // Simpan data pengguna di Vuex store
-        this.$store.dispatch('login', user);
+        this.$store.commit('SET_USER', user); // Menggunakan commit untuk menyimpan user
 
         // Role-based navigation
         if (user.role === 'admin') {

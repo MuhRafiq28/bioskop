@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppNavbar />
-    <Hero class="mt-5" />
+    <Hero class="mt-8" />
     <DaftarFilm />
     <FilmTayang />
   </div>
@@ -21,3 +21,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.mt-8{
+  margin-top: 100px;
+}
+
+</style>
