@@ -7,9 +7,13 @@
         <p class="description_d">Ngebioskop website pembelian tiket yang sudah dipakai oleh banyak orang, harga tiketnya
           terjangkau, dan sudah sangat dipercaya</p>
       </div>
-      <div class="col-lg-6 d-flex justify-content-between align-items-center mt-3">
-        <button class="btn btn-primary">Pesan Sekarang</button>
-        <button class="btn btn-success">About Me</button>
+      <div v-if="!user" class="col-lg-6 d-flex justify-content-between align-items-center mt-3">
+        <router-link to="/login"><button class="btn btn-primary">Pesan Sekarang</button></router-link>
+        <router-link to="/#"><button class="btn btn-success">About Me</button></router-link>
+      </div>
+      <div v-if="user" class="col-lg-6 d-flex justify-content-between align-items-center mt-3">
+        <button @click="masuk" class="btn btn-primary">Masuk {{ user.name }}</button>
+        <router-link to="/#"><button class="btn btn-success">About Me</button></router-link>
       </div>
     </div>
 
@@ -62,8 +66,12 @@
           <p class="description_m">Ngebioskop website pembelian tiket yang sudah dipakai oleh banyak orang, harga
             tiketnya terjangkau, dan sudah sangat dipercaya</p>
         </div>
-        <div class="col-lg-6 d-flex justify-content-between align-items-center mt-3">
+        <div v-if="!user" class="col-lg-6 d-flex justify-content-between align-items-center mt-3">
           <router-link to="/login"><button class="btn btn-primary">Pesan Sekarang</button></router-link>
+          <router-link to="/#"><button class="btn btn-success">About Me</button></router-link>
+        </div>
+        <div v-if="user" class="col-lg-6 d-flex justify-content-between align-items-center mt-3">
+          <button @click="masuk" class="btn btn-primary">Masuk {{ user.name }}</button>
           <router-link to="/#"><button class="btn btn-success">About Me</button></router-link>
         </div>
       </div>
@@ -74,6 +82,11 @@
 <script>
 export default {
   name: "HeroLanding",
+  computed: {
+    user() {
+      return this.$store.state.user; // Ambil data pengguna dari Vuex store
+    },
+  },
   data() {
     return {
       film: [
@@ -86,7 +99,7 @@ export default {
           judul: 'Dilan 1991',
         },
         {
-          img: 'images/avatar.jpg',
+          img: 'images/dilan-1991.jpg',
           judul: 'Avatar 2',
         },
       ],
@@ -102,6 +115,14 @@ export default {
         this.currentIndex = (this.currentIndex + 1) % this.film.length;
       }, 3000);
     },
+    masuk() {
+      // Cek role dari user
+      if (this.user.role === 'admin') {
+        this.$router.push('/homeadmin'); // Arahkan ke halaman admin
+      } else {
+        this.$router.push('/homeuser'); // Arahkan ke halaman user biasa
+      }
+    }
   },
 };
 </script>

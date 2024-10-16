@@ -1,8 +1,7 @@
 <template>
   <div>
     <AppNavbar />
-    <h1>Admin</h1>
-    <Hero class="mt-5" />
+    <Hero class="mt-8" />
     <DaftarFilm />
     <nuxt-link to="/admin/movies">Kelola Pengguna</nuxt-link>
     <FilmTayang />
@@ -24,3 +23,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.mt-8{
+  margin-top: 80px;
+}
+</style>

@@ -206,9 +206,12 @@ func VerifyToken(next echo.HandlerFunc) echo.HandlerFunc {
         }
 
         // Set user information ke context
+        userID := int((*claims)["id"].(float64)) // Memastikan konversi ID dari float64 ke int
+        userRole := (*claims)["role"].(string)
+
         c.Set("user", &User{
-            ID:   int((*claims)["id"].(float64)),
-            Role: (*claims)["role"].(string),
+            ID:   userID,
+            Role: userRole,
         })
 
         return next(c)

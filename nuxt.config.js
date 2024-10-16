@@ -45,7 +45,8 @@ export default {
   },
 
   plugins: [
-    '~/plugins/bootstrap-vue.js'
+    '~/plugins/bootstrap-vue.js',
+    { src: '~/plugins/auth.js', mode: 'client' },
   ],
 
   // Build Configuration

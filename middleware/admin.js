@@ -1,9 +1,21 @@
-// middleware/admin.js
-export default function({ store, redirect }) {
-  const user = store.state.user; // Ambil state pengguna dari Vuex
+export default function ({ store, redirect }) {
+  // Mengecek apakah sedang di client side
+  if (process.client) {
+    // Ambil data user dari localStorage
+    const user = localStorage.getItem('user');
 
-  // Periksa apakah user ada dan memiliki role 'admin'
-  if (!user || user.role !== 'admin') {
-    return redirect('/'); // Redirect jika tidak ada user atau bukan admin
+    if (user) {
+      // Simpan user ke Vuex store
+      store.commit('SET_USER', JSON.parse(user));
+    } else {
+      // Jika tidak ada user, redirect ke halaman login
+      return redirect('/login');
+    }
+
+    // Pastikan role user adalah admin
+    const currentUser = store.state.user;
+    if (!currentUser || currentUser.role !== 'admin') {
+      return redirect('/');
+    }
   }
 }
