@@ -7,7 +7,7 @@
     <button class="btn btn-primary">Pesan</button>
   </div>
   <div class="img py-3">
-    <img src="images/Hero.png" alt="Gambar Hero" class="img-fluid" style="width: 400px;">
+    <img src="images/Hero.png" alt="Gambar Hero" class="img-fluid" style="width: 450px;">
   </div>
 </div>
 
@@ -19,7 +19,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
   font-family: 'Life Savers', cursive;
 }

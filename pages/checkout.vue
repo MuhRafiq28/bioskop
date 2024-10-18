@@ -36,7 +36,7 @@
 
       <div class="harga d-flex ">
         <h3>Rp. <strong>{{ detail.price }}</strong></h3>
-        <button class="ml-2 btn btn-primary">Pesan</button>
+        <button class=" ml-2 btn btn-primary">Pesan</button>
         <br><hr>
       </div>
     </div>
@@ -81,6 +81,10 @@ export default {
 </script>
 
 <style scoped>
+.harga h3 {
+  margin-bottom: 0;
+  margin-top: 2px;
+}
 .mt-7 {
   margin-top: 70px;
 }

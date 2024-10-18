@@ -2,14 +2,16 @@
   <div class="container mb-5">
     <AppNavbar />
     <div class="container-detailTiket mt-5 p-5 rounded-lg pl-5 pr-5">
-      <div class="detailTiket">
+      <div class="detailTiket d-flex justify-content-between flex-wrap">
         <div class="img">
-          <img class="rounded-lg" src="/images/dilan-1991.jpg" alt="Tiket"> <!-- Mengambil gambar dari folder static -->
+          <img class="rounded-lg" src="/images/dilan-1991.jpg" alt="Tiket">
         </div>
-        <div class="desTiket">
+        <div class="d-flex align-items-center mr-5 ">
+          <div class="desTiket ">
           <h1>Dilan 1991</h1>
           <h4>romantisme</h4>
           <p>menemukan cinta di sekolah</p>
+        </div>
         </div>
       </div>
       <div class="hargaTiket d-flex justify-content-between">

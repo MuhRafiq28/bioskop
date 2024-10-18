@@ -4,7 +4,7 @@ navbar
   <div class="fixed-top mt-3 col-12 mb-col-11 ml-0 mb-ml-5 ">
     <b-navbar toggleable="lg" class="content shadow-sm p-2 p-md-0  rounded-5">
       <div class="container">
-        <b-navbar-brand href="#" class="font-weight-bold">NgeBioskop</b-navbar-brand>
+        <b-navbar-brand href="#" class="judul font-weight-bold">NgeBioskop</b-navbar-brand>
 
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
         <b-collapse v-if="!user" id="nav-collapse" is-nav>
@@ -23,7 +23,7 @@ navbar
                 <a @click="home" class="nav-link text-dark" to="/">Home</a>
               </b-nav-item>
               <b-nav-item>
-                <router-link class="nav-link text-dark" to="/#">Pesanan <b-icon-cart></b-icon-cart></router-link>
+                <router-link class="nav-link text-dark" to="/hasilCheckout">Pesanan <b-icon-cart></b-icon-cart></router-link>
               </b-nav-item>
               <b-nav-item>
                 <router-link class="nav-link text-dark" to="/detail">Detail Film
@@ -81,5 +81,9 @@ export default {
 
 .rounded-5 {
   border-radius: 20px !important;
+}
+
+.judul {
+  font-family: 'Life Savers', cursive;
 }
 </style>
