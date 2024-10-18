@@ -20,6 +20,17 @@ export default {
     ]
   },
 
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: 'api/auth/login', method: 'post' },
+          logout: { url: 'api/auth/logout', method: 'post' },
+          user: { url: 'api/user', method: 'get' }
+        }
+      }
+    }
+  },
   // Global CSS
   css: [],
 
@@ -45,7 +56,8 @@ export default {
   },
 
   plugins: [
-    '~/plugins/bootstrap-vue.js'
+    '~/plugins/bootstrap-vue.js',
+    { src: '~/plugins/auth.js', mode: 'client' },
   ],
 
   // Build Configuration

@@ -5,6 +5,7 @@ import (
     "github.com/labstack/echo/v4"
     "io"
     "log"
+    "fmt"
     "net/http"
     "os"
     "path/filepath"
@@ -18,82 +19,74 @@ type Movie struct {
     Genre       string    `json:"genre"`
     Description string    `json:"description"`
     ReleaseDate time.Time `json:"release_date"`
-    UserID      int       `json:"user_id"`
+    UserID      uint      `json:"user_id"`
     ImageURL    string    `json:"image_url"`
 }
 
 // Fungsi AddMovie untuk menambahkan film dengan upload gambar
 func AddMovie(db *sql.DB) echo.HandlerFunc {
-    return func(c echo.Context) error {
-        // Mendapatkan informasi pengguna dari konteks
-        user, ok := c.Get("user").(*User)
-        if !ok || user == nil {
-            return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized"})
-        }
+  return func(c echo.Context) error {
+      user, ok := c.Get("user").(*User)
+      if !ok || user == nil {
+          return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized"})
+      }
 
-        // Memeriksa apakah pengguna adalah admin
-        if user.Role != "admin" {
-            return c.JSON(http.StatusForbidden, map[string]string{"message": "Hanya admin yang bisa menambahkan film"})
-        }
+      if user.Role != "admin" {
+          return c.JSON(http.StatusForbidden, map[string]string{"message": "Hanya admin yang bisa menambahkan film"})
+      }
 
-        // Mengikat data film (tanpa gambar)
-        movie := new(Movie)
-        if err := c.Bind(movie); err != nil {
-            log.Printf("Error binding movie data: %v\n", err)
-            return c.JSON(http.StatusBadRequest, map[string]string{"message": "Permintaan tidak valid"})
-        }
+      title := c.FormValue("title")
+      genre := c.FormValue("genre")
+      description := c.FormValue("description")
+      releaseDate := c.FormValue("release_date")
 
-        // Logging untuk melihat data yang diterima
-        log.Printf("Data film yang diterima: %+v\n", movie)
+      if title == "" || genre == "" || description == "" || releaseDate == "" {
+          return c.JSON(http.StatusBadRequest, map[string]string{"message": "Title, Genre, Description, dan ReleaseDate diperlukan"})
+      }
 
-        // Validasi data film
-        if movie.Title == "" || movie.Genre == "" || movie.Description == "" || movie.ReleaseDate.IsZero() {
-            return c.JSON(http.StatusBadRequest, map[string]string{"message": "Title, Genre, Description, dan ReleaseDate diperlukan"})
-        }
+      parsedReleaseDate, err := time.Parse("2006-01-02", releaseDate)
+      if err != nil {
+          return c.JSON(http.StatusBadRequest, map[string]string{"message": "Format tanggal tidak valid, gunakan YYYY-MM-DD"})
+      }
 
-        // Mengelola upload gambar
-        file, err := c.FormFile("image")
-        if err != nil {
-            return c.JSON(http.StatusBadRequest, map[string]string{"message": "Gambar tidak ditemukan"})
-        }
+      file, err := c.FormFile("image")
+      if err != nil {
+          return c.JSON(http.StatusBadRequest, map[string]string{"message": "Gambar tidak ditemukan"})
+      }
 
-        // Membuka file
-        src, err := file.Open()
-        if err != nil {
-            return err
-        }
-        defer src.Close()
+      src, err := file.Open()
+      if err != nil {
+          return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal membuka gambar"})
+      }
+      defer src.Close()
 
-        // Menentukan jalur tujuan file
-        imagePath := filepath.Join("uploads", file.Filename)
+      uploadsDir := "uploads"
+      if _, err := os.Stat(uploadsDir); os.IsNotExist(err) {
+          os.Mkdir(uploadsDir, os.ModePerm)
+      }
 
-        // Memeriksa apakah file sudah ada (opsional)
-        if _, err := os.Stat(imagePath); err == nil {
-            return c.JSON(http.StatusConflict, map[string]string{"message": "Gambar sudah ada"})
-        }
+      uniqueFilename := fmt.Sprintf("%d_%s", time.Now().Unix(), file.Filename)
+      imagePath := filepath.Join(uploadsDir, uniqueFilename)
 
-        dst, err := os.Create(imagePath)
-        if err != nil {
-            return err
-        }
-        defer dst.Close()
+      dst, err := os.Create(imagePath)
+      if err != nil {
+          return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal menyimpan gambar"})
+      }
+      defer dst.Close()
 
-        // Menyalin file ke server
-        if _, err = io.Copy(dst, src); err != nil {
-            return err
-        }
+      if _, err = io.Copy(dst, src); err != nil {
+          return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal mengunggah gambar"})
+      }
 
-        // Menyimpan URL gambar dan data film ke dalam database
-        imageUrl := "/" + imagePath
-        _, err = db.Exec("INSERT INTO movies (title, genre, description, release_date, user_id, image_url) VALUES ($1, $2, $3, $4, $5, $6)",
-            movie.Title, movie.Genre, movie.Description, movie.ReleaseDate, user.ID, imageUrl)
-        if err != nil {
-            log.Printf("Error adding movie: %v\n", err)
-            return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal menambahkan film"})
-        }
+      imageUrl := "/" + imagePath
+      _, err = db.Exec("INSERT INTO movies (title, genre, description, release_date, user_id, image_url) VALUES ($1, $2, $3, $4, $5, $6)",
+          title, genre, description, parsedReleaseDate, user.ID, imageUrl)
+      if err != nil {
+          return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal menambahkan film"})
+      }
 
-        return c.JSON(http.StatusOK, map[string]string{"message": "Film berhasil ditambahkan", "image_url": imageUrl})
-    }
+      return c.JSON(http.StatusOK, map[string]string{"message": "Film berhasil ditambahkan", "image_url": imageUrl})
+  }
 }
 
 // Fungsi GetAllMovies untuk mengambil semua film

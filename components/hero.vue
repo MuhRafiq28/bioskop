@@ -4,7 +4,7 @@
     <h1 class="mb-5">Selamat datang di
       <br><strong>NgeBioskop</strong></h1>
     <p>Website pemesanan tiket terbaik</p>
-    <router-link to="/" class="btn btn-primary">Pesan</router-link>
+    <button class="btn btn-primary">Pesan</button>
   </div>
   <div class="img py-3">
     <img src="images/Hero.png" alt="Gambar Hero" class="img-fluid" style="width: 400px;">
