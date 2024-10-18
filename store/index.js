@@ -1,14 +1,15 @@
-// store/index.js
 export const state = () => ({
-  user: null // State untuk menyimpan data pengguna
+  user: null,
 });
 
 export const mutations = {
   SET_USER(state, user) {
-    state.user = user; // Menyimpan data pengguna di state
+    if (user && user.id) {
+      state.user = user;
+    }
   },
   CLEAR_USER(state) {
-    state.user = null; // Menghapus data pengguna
+    state.user = null;
   }
 };
 
@@ -17,12 +18,16 @@ export const actions = {
     try {
       const response = await this.$axios.post('/api/login', credentials);
       const user = response.data.user;
-      commit('SET_USER', user); // Pastikan 'user' memiliki properti 'role'
+      if (user && user.id) {
+        localStorage.setItem('user', JSON.stringify(user));
+        commit('SET_USER', user);
+      }
     } catch (error) {
       console.error('Login failed:', error);
     }
   },
   logout({ commit }) {
-    commit('CLEAR_USER'); // Menghapus data pengguna saat logout
+    commit('CLEAR_USER');
+    localStorage.removeItem('user');
   }
 };

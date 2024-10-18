@@ -5,15 +5,7 @@ export default function ({ store, redirect }) {
     if (user) {
       const parsedUser = JSON.parse(user);
       if (parsedUser && parsedUser.id) {
-        if (!store.state.user) {
-          store.commit('SET_USER', parsedUser);
-        }
-
-        if (parsedUser.role !== 'admin') {
-          return redirect('/');
-        }
-      } else {
-        return redirect('/login');
+        store.commit('SET_USER', parsedUser);
       }
     } else {
       return redirect('/login');

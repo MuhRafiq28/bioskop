@@ -39,21 +39,20 @@ export default {
           password: this.password,
         });
 
-        const user = response.data; // Ambil user data dari response
+        const user = response.data;
+        if (user && user.id) {
+          localStorage.setItem('user', JSON.stringify(user));
+          this.$store.commit('SET_USER', user);
 
-        // Simpan user di localStorage
-        localStorage.setItem('user', JSON.stringify(user)); // Simpan objek user ke localStorage
-
-        // Simpan data pengguna di Vuex store
-        this.$store.commit('SET_USER', user); // Menggunakan commit untuk menyimpan user
-
-        // Role-based navigation
-        if (user.role === 'admin') {
-          this.$router.push('/homeadmin'); // Arahkan ke halaman admin
-        } else if (user.role === 'user') {
-          this.$router.push('/homeuser'); // Arahkan ke halaman user
+          if (user.role === 'admin') {
+            this.$router.push('/homeadmin');
+          } else if (user.role === 'user') {
+            this.$router.push('/homeuser');
+          } else {
+            this.$router.push('/');
+          }
         } else {
-          this.$router.push('/'); // Halaman default jika role tidak dikenali
+          this.error = 'Data pengguna tidak valid';
         }
       } catch (error) {
         this.error = error.response?.data?.message || 'Login gagal, coba lagi.';
@@ -61,7 +60,7 @@ export default {
         this.loading = false;
       }
     }
-  },
+  }
 };
 </script>
 
