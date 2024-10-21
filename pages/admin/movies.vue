@@ -10,6 +10,7 @@
     <table class="table table-striped" v-if="movies.length > 0">
       <thead>
         <tr>
+          <th>Gambar</th>
           <th>Judul</th>
           <th>Genre</th>
           <th>Deskripsi</th>
@@ -19,6 +20,11 @@
       </thead>
       <tbody>
         <tr v-for="movie in movies" :key="movie.id">
+          <td>
+            <img v-if="movie.image_url" :src="`http://localhost:8080${movie.image_url}`" :alt="movie.title"
+              style="width: 100px; height: auto;" />
+            <span v-else>Tidak ada gambar</span>
+          </td>
           <td>{{ movie.title }}</td>
           <td>{{ movie.genre }}</td>
           <td>{{ movie.description }}</td>
@@ -59,10 +65,26 @@ export default {
     },
     async deleteMovie(id) {
       if (confirm('Apakah Anda yakin ingin menghapus film ini?')) {
+        const token = localStorage.getItem('token'); // Ambil token dari localStorage
+        console.log(`Menghapus film dengan ID: ${id}`); // Log ID
         try {
-          await this.$axios.delete(`/movies/${id}`);
+          const response = await fetch(`http://localhost:8080/movies/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text(); // Ambil pesan error dari server
+            throw new Error(`Network response was not ok: ${errorText}`);
+          }
+
+          // Tindakan setelah penghapusan berhasil
           this.movies = this.movies.filter(movie => movie.id !== id);
-        } catch (err) {
+        } catch (error) {
+          console.error('Error:', error);
           this.error = 'Gagal menghapus film.';
         }
       }

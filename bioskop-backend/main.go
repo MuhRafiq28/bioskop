@@ -1,73 +1,126 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
-	"os"
-
-	"bioskop-backend/handlers"
-	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-
-	_ "github.com/lib/pq" // PostgreSQL driver
+    "database/sql"
+    "fmt"
+    "log"
+    "os"
+    "net/http"
+    "bioskop-backend/handlers"
+    "github.com/dgrijalva/jwt-go"
+    "github.com/joho/godotenv"
+    "github.com/labstack/echo/v4"
+    "github.com/labstack/echo/v4/middleware"
+    _ "github.com/lib/pq" // Driver PostgreSQL
 )
 
+// Definisikan struktur User
+type User struct {
+    ID   uint
+    Role string
+}
+
+// Middleware JWT
+func JWTMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+    return func(c echo.Context) error {
+        token := c.Request().Header.Get("Authorization")
+        if token == "" {
+            return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Token tidak ada"})
+        }
+
+        // Validasi token
+        user, err := ValidateToken(token)
+        if err != nil {
+            return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Token tidak valid"})
+        }
+
+        c.Set("user", user) // Set pengguna ke konteks
+        return next(c)
+    }
+}
+
+// Fungsi untuk memvalidasi token
+func ValidateToken(tokenString string) (*User, error) {
+    secretKey := []byte("your-secret-key")
+
+    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+            return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+        }
+        return secretKey, nil
+    })
+
+    if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+        userID := uint(claims["id"].(float64))
+        role := claims["role"].(string)
+
+        return &User{ID: userID, Role: role}, nil
+    } else {
+        return nil, err
+    }
+}
+
 func main() {
-	// Load configuration from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
+    // Load configuration from .env file
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatalf("Error loading .env file")
+    }
 
-	// Create connection string using parameters from .env
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-	)
+    // Create connection string using parameters from .env
+    connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+        os.Getenv("DB_HOST"),
+        os.Getenv("DB_PORT"),
+        os.Getenv("DB_USER"),
+        os.Getenv("DB_PASSWORD"),
+        os.Getenv("DB_NAME"),
+    )
 
-	// Connect to PostgreSQL database
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatalf("Error connecting to the database: %v", err)
-	}
+    // Connect to PostgreSQL database
+    db, err := sql.Open("postgres", connStr)
+    if err != nil {
+        log.Fatalf("Error connecting to the database: %v", err)
+    }
 
-	// Ensure the connection is successful
-	err = db.Ping()
-	if err != nil {
-		log.Fatalf("Failed to ping database: %v", err)
-	}
-	defer db.Close()
+    // Ensure the connection is successful
+    err = db.Ping()
+    if err != nil {
+        log.Fatalf("Failed to ping database: %v", err)
+    }
+    defer db.Close()
 
-	// Initialize Echo framework
-	e := echo.New()
+    // Initialize Echo framework
+    e := echo.New()
 
-	// Middleware for logging and CORS
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+    // Middleware for logging and CORS
+    e.Use(middleware.Logger())
+    e.Use(middleware.Recover())
+    e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+        AllowOrigins: []string{"*"}, // Ganti '*' dengan domain spesifik jika perlu
+        AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+        AllowHeaders: []string{"Content-Type", "Authorization"}, // Menambahkan header yang diizinkan
+    }))
 
-	// Routes for login and registration
-	e.POST("/register", handlers.Register(db))
-	e.POST("/login", handlers.Login(db))
+    // Serve static files from the uploads directory
+    e.Static("/uploads", "uploads")
 
-	// CRUD routes for users
-	e.GET("/users", handlers.GetAllUsers(db), handlers.VerifyToken)       // Get all users
-	e.GET("/users/:id", handlers.GetUserByID(db), handlers.VerifyToken)   // Get user by ID
-	e.PUT("/users/:id", handlers.UpdateUser(db), handlers.VerifyToken)    // Update user by ID
-	e.DELETE("/users/:id", handlers.DeleteUser(db), handlers.VerifyToken) // Delete user by ID
+    // Routes for login and registration
+    e.POST("/register", handlers.Register(db))
+    e.POST("/login", handlers.Login(db))
 
-	// CRUD routes for movies
-	e.GET("/movies", handlers.GetAllMovies(db))                             // Get all movies
-	e.GET("/movies/:id", handlers.GetMovieByID(db))                         // Get movie by ID
-	e.POST("/movies", handlers.AddMovie(db), handlers.VerifyToken)          // Add new movie
-	e.PUT("/movies/:id", handlers.UpdateMovie(db), handlers.VerifyToken)    // Update movie by ID
-	e.DELETE("/movies/:id", handlers.DeleteMovie(db), handlers.VerifyToken) // Delete movie by ID
+    // CRUD routes for users
+    e.GET("/users", handlers.GetAllUsers(db), JWTMiddleware) // Get all users
+    e.GET("/users/:id", handlers.GetUserByID(db), JWTMiddleware) // Get user by ID
+    e.PUT("/users/:id", handlers.UpdateUser(db), JWTMiddleware) // Update user by ID
+    e.DELETE("/users/:id", handlers.DeleteUser(db), JWTMiddleware) // Delete user by ID
 
-	// Start server on port 8080
-	e.Logger.Fatal(e.Start(":8080"))
+    // CRUD routes for movies
+    e.GET("/movies", handlers.GetAllMovies(db)) // Get all movies
+    e.POST("/movies", handlers.AddMovie(db)) // Add new movie
+    e.GET("/movies/:id", handlers.GetMovieByID(db))
+    e.PUT("/movies/:id", handlers.UpdateMovie(db)) // Update movie by ID
+    e.DELETE("/movies/:id", handlers.DeleteMovie(db)) // Delete movie by ID
+
+    // Start server on port 8080
+    e.Logger.Fatal(e.Start(":8080"))
 }

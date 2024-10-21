@@ -178,8 +178,6 @@ export default {
 
 .slide-fade-enter,
 .slide-fade-leave-to
-
-/* .slide-fade-leave-active di versi Vue yang lebih lama */
   {
   opacity: 0;
   transform: translateX(10px);
