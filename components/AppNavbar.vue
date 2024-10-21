@@ -26,7 +26,7 @@ navbar
                 <router-link class="nav-link text-dark" to="/#">Pesanan <b-icon-cart></b-icon-cart></router-link>
               </b-nav-item>
               <b-nav-item>
-                <router-link class="nav-link text-dark" to="/detail">Detail Film
+                <router-link class="nav-link text-dark" to="/film">Detail Film
                   <b-icon-film></b-icon-film></router-link>
               </b-nav-item>
             </b-navbar-nav>
