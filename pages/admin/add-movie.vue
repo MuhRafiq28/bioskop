@@ -55,10 +55,11 @@ export default {
       try {
         const response = await this.$axios.post('http://localhost:8080/movies', formData, {
           headers: {
-            Authorization: `Bearer ${this.token}`, 
+            Authorization: `Bearer ${this.token}`,
           },
         });
         alert('Film berhasil ditambahkan: ' + response.data.message);
+        this.$router.push('/homeadmin');
       } catch (error) {
         this.error = 'Gagal menambahkan film: ' + error.response.data.message;
       }

@@ -32,13 +32,14 @@
               :src="`http://localhost:8080${movie.image_url}`"
               :alt="movie.title"
               class="card-img-top"
-              style="height: 300px; object-fit: cover;"
+              style="height: 400px; "
+              @click="pesan(movie.id)"
             />
             <span v-else class="text-center">Tidak ada gambar</span>
             <div class="card-body d-flex flex-column align-items-center">
-              <h5 class="card-title">{{ movie.title }}</h5>
-              <p class="card-text">{{ movie.genre }}</p>
-              <button @click="pesan(movie.id)" class="btn btn-success">Pesan</button>
+              <h5 class="card-title m-0 p-0">{{ movie.title }}</h5>
+              <p class="card-text m-0 p-0">{{ movie.genre }}</p>
+              <button @click="pesan(movie.id)" class="btn btn-success mt-2">Pesan</button>
             </div>
           </div>
         </div>
@@ -58,13 +59,12 @@ export default {
   data() {
     return {
       movies: [],
-      searchQuery: '', // Tambahkan properti untuk pencarian
+      searchQuery: '', 
       error: null,
     };
   },
   computed: {
     filteredMovies() {
-      // Filter film berdasarkan query pencarian
       return this.movies.filter(movie =>
         movie.title.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
@@ -104,8 +104,13 @@ export default {
 }
 
 .card-img-top {
-  max-height: 300px;
+  max-height: 320px;
   object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.card-img-top:hover {
+  transform: scale(1.1);
 }
 
 .row {
