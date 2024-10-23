@@ -4,7 +4,7 @@
     <div class="container-2 mt-7">
       <div class="status p-4 d-flex align-items-center">
         <h5 class="judul">
-          <b-icon-basket3></b-icon-basket3><span class="ml-3">Belanja</span>
+          <b-icon-cart></b-icon-cart><span class="ml-3">Belanja</span>
         </h5>
         <p class="ml-3 waktu-teransaksi">23 Sep 24</p>
         <div
