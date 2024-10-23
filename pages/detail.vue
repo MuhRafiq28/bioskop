@@ -1,51 +1,43 @@
 <template>
   <div class="container mb-5">
     <AppNavbar />
-    <div class="container-detailTiket mt-5 p-5 rounded-lg pl-5 pr-5">
-      <div class="detailTiket d-flex justify-content-between flex-wrap">
-        <div class="img">
-          <img class="rounded-lg" src="/images/dilan-1991.jpg" alt="Tiket">
+    <div class="container-detailTiket p-5 rounded-lg pl-5 pr-5 mt-8">
+      <div class="detailTiket">
+        <div class="img col-lg-6" @click="showTrailer">
+          <img
+            v-if="movie.image_url"
+            :src="`http://localhost:8080${movie.image_url}`"
+            :alt="movie.title"
+            class="card-img-top"
+            style="height: 400px; cursor: pointer;"
+          />
+          <span v-else class="text-center">Tidak ada gambar</span>
         </div>
-        <div class="d-flex align-items-center mr-5 ">
-          <div class="desTiket ">
-          <h1>Dilan 1991</h1>
-          <h4>romantisme</h4>
-          <p>menemukan cinta di sekolah</p>
+        <div class="desTiket col-lg-6 d-flex flex-column align-items-center justify-content-center text-center">
+          <h1 class="display-3"><strong>{{ movie.title }}</strong></h1>
+          <h4>{{ movie.genre }}</h4>
+          <p>{{ movie.description }}</p>
         </div>
-        </div>
+      </div>
+      <div v-if="showVideo" class="video-container">
+        <iframe
+          width="100%"
+          height="400"
+          :src="trailerUrl"
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
+        <button class="btn btn-danger mt-2" @click="showVideo = false">Tutup</button>
       </div>
       <div class="hargaTiket d-flex justify-content-between">
         <div class="detail">
-        <h3>Bandung</h3>
-        <p>29/09/07</p>
-        <p>23:00</p>
-      </div>
-      <div class="harga">
-        <h3 class="mb-2">Rp.100</h3>
-        <button class="rounded-sm">Pesan</button>
-      </div>
-      </div>
-      <div class="hargaTiket d-flex justify-content-between">
-        <div class="detail">
-        <h3>Bandung</h3>
-        <p>29/09/07</p>
-        <p>23:00</p>
-      </div>
-      <div class="harga">
-        <h3 class="mb-2">Rp.100</h3>
-        <button class="rounded-sm">Pesan</button>
-      </div>
-      </div>
-      <div class="hargaTiket d-flex justify-content-between">
-        <div class="detail">
-        <h3>Bandung</h3>
-        <p>29/09/07</p>
-        <p>23:00</p>
-      </div>
-      <div class="harga">
-        <h3 class="mb-2">Rp.100</h3>
-        <button class="rounded-sm">Pesan</button>
-      </div>
+          <p>{{ movie.release_date }}</p>
+          <p>{{ movie.ticketQuantity }}</p>
+        </div>
+        <div class="harga">
+          <h3 class="mb-2">{{ movie.harga }}</h3>
+          <button class="rounded-sm">Pesan</button>
+        </div>
       </div>
     </div>
   </div>
@@ -55,14 +47,57 @@
 import AppNavbar from '~/components/AppNavbar.vue'; // Pastikan jalur file benar
 
 export default {
-    name: "detail",
-    components: {
+  name: "detail",
+  components: {
     AppNavbar
+  },
+  data() {
+    return {
+      movie: {
+        title: '',
+        genre: '',
+        description: '',
+        release_date: '',
+        ticketQuantity: '',
+        harga: '', // Pastikan ini ada di data film
+        imageFile: '',
+        error: '',
+        trailer_url: ''
+      },
+      showVideo: false,
+      trailerUrl: '',
+    };
+  },
+  async mounted() {
+    const id = this.$route.query.id;
+    try {
+      const response = await this.$axios.get(`/movies/${id}`);
+      this.movie = response.data;
+
+      // Ubah URL trailer menjadi format embed
+      if (this.movie.trailer_url) {
+        const videoId = this.movie.trailer_url.split('v=')[1]; // Mengambil ID dari URL
+        if (videoId) {
+          this.trailerUrl = `https://www.youtube.com/embed/${videoId}`;
+        }
+      }
+    } catch (err) {
+      this.error = 'Gagal mengambil data film.';
+    }
+  },
+  methods: {
+    showTrailer() {
+      if (this.trailerUrl) {
+        this.showVideo = true; // Tampilkan video
+      } else {
+        alert('Trailer tidak tersedia.');
+      }
+    },
   }
 }
 </script>
 
-<style>
+<style scoped>
 .container-detailTiket {
   border: 1px solid #ccc;
   padding: 20px;
@@ -76,7 +111,6 @@ export default {
 }
 
 .img img {
-  max-width: 200px;
   height: auto;
 }
 
@@ -86,5 +120,14 @@ export default {
 
 .hargaTiket {
   margin-top: 20px;
+}
+
+.video-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.mt-8 {
+  margin-top: 100px;
 }
 </style>

@@ -59,7 +59,7 @@ export default {
   data() {
     return {
       movies: [],
-      searchQuery: '', 
+      searchQuery: '',
       error: null,
     };
   },
@@ -83,7 +83,7 @@ export default {
       return new Date(date).toLocaleDateString();
     },
     pesan(id) {
-      this.$router.push(`/admin/detail?id=${id}`);
+      this.$router.push(`/detail?id=${id}`);
     },
     searchMovies() {
       // Fungsi ini akan berjalan setiap kali tombol search ditekan

@@ -4,8 +4,9 @@ import (
     "database/sql"
     "fmt"
     "log"
-    "os"
     "net/http"
+    "os"
+
     "bioskop-backend/handlers"
     "github.com/dgrijalva/jwt-go"
     "github.com/joho/godotenv"
@@ -16,8 +17,8 @@ import (
 
 // Definisikan struktur User
 type User struct {
-    ID   uint
-    Role string
+    ID   uint   `json:"id"`
+    Role string `json:"role"`
 }
 
 // Middleware JWT
@@ -34,16 +35,25 @@ func JWTMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
             return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Token tidak valid"})
         }
 
-        c.Set("user", user) // Set pengguna ke konteks
+        c.Set("user_id", user.ID) // Set user ID ke konteks
         return next(c)
     }
 }
 
 // Fungsi untuk memvalidasi token
 func ValidateToken(tokenString string) (*User, error) {
-    secretKey := []byte("your-secret-key")
+    secretKey := []byte(os.Getenv("JmySuperSecretKey12345")) // Ambil secret dari environment
+
+    // Log token yang diterima untuk debugging
+    log.Println("Token diterima: ", tokenString)
+
+    // Menghapus awalan 'Bearer ' jika ada
+    if len(tokenString) > 6 && tokenString[:7] == "Bearer " {
+        tokenString = tokenString[7:]
+    }
 
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+        log.Println("Memvalidasi token dengan algoritma: ", token.Header["alg"]) // Log algoritma
         if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
             return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
         }
@@ -54,8 +64,10 @@ func ValidateToken(tokenString string) (*User, error) {
         userID := uint(claims["id"].(float64))
         role := claims["role"].(string)
 
+        log.Println("Token valid untuk user ID: ", userID, " dengan role: ", role) // Log jika valid
         return &User{ID: userID, Role: role}, nil
     } else {
+        log.Println("Error saat memvalidasi token: ", err) // Log error saat validasi
         return nil, err
     }
 }
@@ -116,10 +128,10 @@ func main() {
 
     // CRUD routes for movies
     e.GET("/movies", handlers.GetAllMovies(db)) // Get all movies
-    e.POST("/movies", handlers.AddMovie(db)) // Add new movie
-    e.GET("/movies/:id", handlers.GetMovieByID(db))
-    e.PUT("/movies/:id", handlers.UpdateMovie(db)) // Update movie by ID
-    e.DELETE("/movies/:id", handlers.DeleteMovie(db)) // Delete movie by ID
+    e.POST("/movies", handlers.AddMovie(db), JWTMiddleware) // Tambahkan JWTMiddleware untuk autentikasi
+    e.GET("/movies/:id", handlers.GetMovieByID(db)) // Dapatkan film berdasarkan ID
+    e.PUT("/movies/:id", handlers.UpdateMovie(db), JWTMiddleware) // Update movie by ID
+    e.DELETE("/movies/:id", handlers.DeleteMovie(db), JWTMiddleware) // Delete movie by ID
 
     // Start server on port 8080
     e.Logger.Fatal(e.Start(":8080"))

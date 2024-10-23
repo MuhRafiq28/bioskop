@@ -15,6 +15,9 @@
           <th>Genre</th>
           <th>Deskripsi</th>
           <th>Tanggal Rilis</th>
+          <th>Harga</th> <!-- Kolom Harga -->
+          <th>Trailer URL</th> <!-- Kolom Trailer URL -->
+          <th>Jumlah Kursi</th> <!-- Kolom Jumlah Kursi -->
           <th>Aksi</th>
         </tr>
       </thead>
@@ -29,6 +32,9 @@
           <td>{{ movie.genre }}</td>
           <td>{{ movie.description }}</td>
           <td>{{ formatDate(movie.release_date) }}</td>
+          <td>{{ movie.harga }} </td> <!-- Menampilkan harga -->
+          <td>{{ movie.trailer_url }} </td> <!-- Menampilkan trailer URL -->
+          <td>{{ movie.jumlah_tiket }} </td> <!-- Menampilkan jumlah kursi -->
           <td>
             <button @click="editMovie(movie.id)" class="btn btn-warning">Edit</button>
             <button @click="deleteMovie(movie.id)" class="btn btn-danger">Hapus</button>

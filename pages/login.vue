@@ -31,35 +31,40 @@ export default {
   },
   methods: {
     async login() {
-      this.loading = true;
-      this.error = null;
-      try {
-        const response = await this.$axios.post('/login', {
-          email: this.email,
-          password: this.password,
-        });
+  this.loading = true;
+  this.error = null;
+  try {
+    const response = await this.$axios.post('/login', {
+      email: this.email,
+      password: this.password,
+    });
 
-        const user = response.data;
-        if (user && user.id) {
-          localStorage.setItem('user', JSON.stringify(user));
-          this.$store.commit('SET_USER', user);
+    const user = response.data;
+    if (user && user.id) {
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', user.token); // Simpan token
+      this.$store.commit('SET_USER', user);
 
-          if (user.role === 'admin') {
-            this.$router.push('/homeadmin');
-          } else if (user.role === 'user') {
-            this.$router.push('/homeuser');
-          } else {
-            this.$router.push('/');
-          }
-        } else {
-          this.error = 'Data pengguna tidak valid';
-        }
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Login gagal, coba lagi.';
-      } finally {
-        this.loading = false;
+      // Set header default untuk Axios
+      this.$axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+
+      // Navigasi berdasarkan role
+      if (user.role === 'admin') {
+        this.$router.push('/homeadmin');
+      } else if (user.role === 'user') {
+        this.$router.push('/homeuser');
+      } else {
+        this.$router.push('/');
       }
+    } else {
+      this.error = 'Data pengguna tidak valid';
     }
+  } catch (error) {
+    this.error = error.response?.data?.message || 'Login gagal, coba lagi.';
+  } finally {
+    this.loading = false;
+  }
+}
   }
 };
 </script>
