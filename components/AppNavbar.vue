@@ -2,9 +2,9 @@ navbar
 
 <template>
   <div class="fixed-top mt-3 col-12 mb-col-11 ml-0 mb-ml-5 ">
-    <b-navbar toggleable="lg" class="content shadow-sm p-2 p-md-0  rounded-5">
+    <b-navbar toggleable="lg" class="content p-2 p-md-0  rounded-5">
       <div class="container">
-        <b-navbar-brand href="#" class="judul font-weight-bold">NgeBioskop</b-navbar-brand>
+        <b-navbar-brand href="#" class="judul btn btn-white font-weight-bold">NgeBioskop</b-navbar-brand>
 
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
         <b-collapse v-if="!user" id="nav-collapse" is-nav>
@@ -17,30 +17,32 @@ navbar
           </b-navbar-nav>
         </b-collapse>
 
-          <b-collapse v-if="user" id="nav-collapse" is-nav>
-            <b-navbar-nav class="ml-auto">
-              <b-nav-item>
-                <a @click="home" class="nav-link text-dark" to="/">Home</a>
-              </b-nav-item>
-              <b-nav-item>
-                <router-link class="nav-link text-dark" to="/hasilCheckout">Pesanan <b-icon-cart></b-icon-cart></router-link>
-              </b-nav-item>
-              <b-nav-item>
-                <router-link class="nav-link text-dark" to="/film">Detail Film
-                  <b-icon-film></b-icon-film></router-link>
-              </b-nav-item>
-            </b-navbar-nav>
-            <b-navbar-nav>
-              <b-nav-item>
-                <nuxt-link to="/profile">
-                  <b-button class="px-3 text-white bg-dark">
-                    {{ user.name }} <b-icon-person></b-icon-person>
-                  </b-button>
-                </nuxt-link>
-                <b-button variant="outline-danger" class="ml-2" @click="logout">Logout <b-icon-door-closed></b-icon-door-closed></b-button>
-              </b-nav-item>
-            </b-navbar-nav>
-          </b-collapse>
+        <b-collapse v-if="user" id="nav-collapse" is-nav>
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item>
+              <a @click="home" class="nav-link btn btn-white text-dark" to="/">Home</a>
+            </b-nav-item>
+            <b-nav-item>
+              <router-link class="nav-link btn btn-white text-dark" to="/hasilCheckout">Pesanan
+                <b-icon-cart></b-icon-cart></router-link>
+            </b-nav-item>
+            <b-nav-item>
+              <router-link class="nav-link btn btn-white text-dark" to="/film">Detail Film
+                <b-icon-film></b-icon-film></router-link>
+            </b-nav-item>
+          </b-navbar-nav>
+          <b-navbar-nav>
+            <b-nav-item>
+              <nuxt-link :to="{ name: 'profile', query: { id: user.id } }">
+                <b-button class="px-3 text-white bg-dark">
+                  {{ user.name }} <b-icon-person></b-icon-person>
+                </b-button>
+              </nuxt-link>
+              <b-button variant="outline-danger" class="ml-2" @click="logout">Logout
+                <b-icon-door-closed></b-icon-door-closed></b-button>
+            </b-nav-item>
+          </b-navbar-nav>
+        </b-collapse>
 
       </div>
     </b-navbar>
@@ -76,7 +78,7 @@ export default {
 
 <style scoped>
 .content {
-  background-color: #F5F5F5;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .rounded-5 {
@@ -85,5 +87,13 @@ export default {
 
 .judul {
   font-family: 'Life Savers', cursive;
+}
+
+.btn-white {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.btn-white:hover {
+  background-color: rgba(240, 240, 240, 0.8);
 }
 </style>

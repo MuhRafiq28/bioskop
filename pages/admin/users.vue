@@ -1,7 +1,11 @@
 <template>
-  <div>
-    <h1>Daftar Pengguna</h1>
-    <table>
+  <div class="users">
+    <AppNavbar />
+  <div class="container">
+    <h2 class="text-center">Manajemen Pengguna</h2>
+    <router-link :to="{ name: 'add-user' }" class="btn btn-primary mb-3">Tambah Pengguna</router-link>
+
+    <table class="table table-bordered">
       <thead>
         <tr>
           <th>ID</th>
@@ -18,38 +22,58 @@
           <td>{{ user.email }}</td>
           <td>{{ user.role }}</td>
           <td>
-            <nuxt-link :to="`/admin/edit-user/${user.id}`">Edit</nuxt-link> |
-            <button @click="deleteUser(user.id)">Hapus</button>
+            <router-link :to="{ name: 'edit-user', query: { id: user.id } }" class="btn btn-warning btn-sm">Edit</router-link>
+            <button @click="deleteUser(user.id)" class="btn btn-danger btn-sm">Hapus</button>
           </td>
         </tr>
       </tbody>
     </table>
+    <div v-if="message" class="alert alert-info mt-3">{{ message }}</div>
   </div>
+</div>
 </template>
 
 <script>
+import AppNavbar from '../../components/AppNavbar.vue';
+
 export default {
+  name:'users',
+  components: {
+    AppNavbar
+  },
   data() {
     return {
-      users: []
+      users: [],
+      message: ''
     };
   },
-  async fetch() {
+  async mounted() {
     try {
-      const response = await this.$axios.get('/api/users');
+      const token = localStorage.getItem('token');
+      const response = await this.$axios.get('/users', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       this.users = response.data;
     } catch (error) {
-      console.error('Error fetching users:', error);
+      this.message = 'Gagal mengambil data pengguna.';
     }
   },
   methods: {
     async deleteUser(id) {
-      if (confirm('Apakah anda yakin ingin menghapus user ini?')) {
+      if (confirm('Apakah kamu yakin ingin menghapus pengguna ini?')) {
         try {
-          await this.$axios.delete(`/api/users/${id}`);
+          const token = localStorage.getItem('token');
+          await this.$axios.delete(`/users/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
           this.users = this.users.filter(user => user.id !== id);
+          this.message = 'Pengguna berhasil dihapus.';
         } catch (error) {
-          console.error('Error deleting user:', error);
+          this.message = 'Gagal menghapus pengguna.';
         }
       }
     }
@@ -58,13 +82,9 @@ export default {
 </script>
 
 <style scoped>
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th, td {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: left;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 100px;
 }
 </style>

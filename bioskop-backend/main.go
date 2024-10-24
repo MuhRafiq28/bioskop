@@ -42,7 +42,7 @@ func JWTMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 // Fungsi untuk memvalidasi token
 func ValidateToken(tokenString string) (*User, error) {
-    secretKey := []byte(os.Getenv("JmySuperSecretKey12345")) // Ambil secret dari environment
+    secretKey := []byte(os.Getenv("JWT_SECRET_KEY")) // Ambil secret dari environment
 
     // Log token yang diterima untuk debugging
     log.Println("Token diterima: ", tokenString)
@@ -121,10 +121,11 @@ func main() {
     e.POST("/login", handlers.Login(db))
 
     // CRUD routes for users
-    e.GET("/users", handlers.GetAllUsers(db), JWTMiddleware) // Get all users
-    e.GET("/users/:id", handlers.GetUserByID(db), JWTMiddleware) // Get user by ID
-    e.PUT("/users/:id", handlers.UpdateUser(db), JWTMiddleware) // Update user by ID
-    e.DELETE("/users/:id", handlers.DeleteUser(db), JWTMiddleware) // Delete user by ID
+    e.POST("/users", handlers.Register(db)) 
+    e.GET("/users", handlers.GetAllUsers(db), handlers.VerifyToken) // Get all users
+    e.GET("/users/:id", handlers.GetUserByID(db), handlers.VerifyToken) // Get user by ID
+    e.PUT("/users/:id", handlers.UpdateUser(db), handlers.VerifyToken) // Update user by ID
+    e.DELETE("/users/:id", handlers.DeleteUser(db), handlers.VerifyToken) // Delete user by ID
 
     // CRUD routes for movies
     e.GET("/movies", handlers.GetAllMovies(db)) // Get all movies

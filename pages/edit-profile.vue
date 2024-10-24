@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-5">
-    <h2 class="text-center">Edit Pengguna</h2>
-    <form @submit.prevent="updateUser">
+    <h2 class="text-center">Edit Profil Pengguna</h2>
+    <form @submit.prevent="updateProfile"> <!-- Pastikan memanggil updateProfile di sini -->
       <div class="form-group">
         <label for="name">Nama:</label>
         <input type="text" id="name" class="form-control" v-model="user.name" required />
@@ -13,23 +13,18 @@
       </div>
 
       <div class="form-group">
-        <label for="password">Password (Kosongkan jika tidak ingin mengubah):</label>
-        <input type="password" id="password" class="form-control" v-model="user.password" />
+        <label for="password">Password Baru:</label>
+        <input type="password" id="password" class="form-control" v-model="user.password"
+          placeholder="Kosongkan jika tidak ingin mengubah" autocomplete="new-password" />
       </div>
 
-      <div class="form-group">
-        <label for="role">Role:</label>
-        <select id="role" class="form-control" v-model="user.role">
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
 
-      <button type="submit" class="btn btn-primary mt-3">Simpan Perubahan</button>
+      <button type="submit" class="btn btn-primary mt-3">Perbarui Profil</button>
     </form>
 
     <div v-if="message" class="alert alert-info mt-3">{{ message }}</div>
-    <router-link :to="{ name: 'users' }" class="btn btn-secondary mt-3">Kembali ke Daftar Pengguna</router-link>
+    <router-link :to="{ name: 'profile', query: { id: user.id } }" class="btn btn-secondary mt-3">Kembali ke
+      Profil</router-link>
   </div>
 </template>
 
@@ -38,10 +33,10 @@ export default {
   data() {
     return {
       user: {
+        id: '',
         name: '',
         email: '',
-        password: '',
-        role: 'user'
+        password: ''
       },
       message: ''
     };
@@ -60,17 +55,29 @@ export default {
     }
   },
   methods: {
-    async updateUser() {
+    async updateProfile() {
       try {
         const token = localStorage.getItem('token');
-        await this.$axios.put(`/users/${this.user.id}`, this.user, {
+        const response = await this.$axios.put(`/users/${this.user.id}`, this.user, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        this.message = 'Pengguna berhasil diperbarui.';
+
+        console.log('Response after update:', response.data); // Tambahkan log ini
+
+        // Memperbarui data pengguna di Vuex
+        this.$store.commit('SET_USER', response.data);
+
+        // Jika server mengembalikan token baru, simpan token baru
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+        }
+
+        localStorage.setItem('user', JSON.stringify(response.data)); // Update localStorage setelah profil diupdate
+        this.message = 'Profil berhasil diperbarui.';
       } catch (error) {
-        this.message = 'Gagal memperbarui pengguna.';
+        this.message = 'Gagal memperbarui profil.';
       }
     }
   }

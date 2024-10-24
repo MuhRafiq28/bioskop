@@ -1,53 +1,62 @@
 <template>
-  <div class="container">
-    <h1>Daftar Film</h1>
-    <button @click="$router.push('/admin/add-movie')" class="btn btn-success mb-3">Tambah Film</button>
+  <div class="movies">
+    <AppNavbar />
+    <div class="container mt-8">
+      <h1>Daftar Film</h1>
+      <button @click="$router.push('/admin/add-movie')" class="btn btn-success mb-3">Tambah Film</button>
 
-    <div v-if="movies.length === 0">
-      <p>Belum ada film.</p>
+      <div v-if="movies.length === 0">
+        <p>Belum ada film.</p>
+      </div>
+
+      <table class="table table-striped" v-if="movies.length > 0">
+        <thead>
+          <tr>
+            <th>Gambar</th>
+            <th>Judul</th>
+            <th>Genre</th>
+            <th>Deskripsi</th>
+            <th>Tanggal Rilis</th>
+            <th>Harga</th> <!-- Kolom Harga -->
+            <th>Trailer URL</th> <!-- Kolom Trailer URL -->
+            <th>Jumlah Kursi</th> <!-- Kolom Jumlah Kursi -->
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="movie in movies" :key="movie.id">
+            <td>
+              <img v-if="movie.image_url" :src="`http://localhost:8080${movie.image_url}`" :alt="movie.title"
+                style="width: 100px; height: auto;" />
+              <span v-else>Tidak ada gambar</span>
+            </td>
+            <td>{{ movie.title }}</td>
+            <td>{{ movie.genre }}</td>
+            <td>{{ movie.description }}</td>
+            <td>{{ formatDate(movie.release_date) }}</td>
+            <td>{{ movie.harga }} </td> <!-- Menampilkan harga -->
+            <td>{{ movie.trailer_url }} </td> <!-- Menampilkan trailer URL -->
+            <td>{{ movie.jumlah_tiket }} </td> <!-- Menampilkan jumlah kursi -->
+            <td>
+              <button @click="editMovie(movie.id)" class="btn btn-warning">Edit</button>
+              <button @click="deleteMovie(movie.id)" class="btn btn-danger">Hapus</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <table class="table table-striped" v-if="movies.length > 0">
-      <thead>
-        <tr>
-          <th>Gambar</th>
-          <th>Judul</th>
-          <th>Genre</th>
-          <th>Deskripsi</th>
-          <th>Tanggal Rilis</th>
-          <th>Harga</th> <!-- Kolom Harga -->
-          <th>Trailer URL</th> <!-- Kolom Trailer URL -->
-          <th>Jumlah Kursi</th> <!-- Kolom Jumlah Kursi -->
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="movie in movies" :key="movie.id">
-          <td>
-            <img v-if="movie.image_url" :src="`http://localhost:8080${movie.image_url}`" :alt="movie.title"
-              style="width: 100px; height: auto;" />
-            <span v-else>Tidak ada gambar</span>
-          </td>
-          <td>{{ movie.title }}</td>
-          <td>{{ movie.genre }}</td>
-          <td>{{ movie.description }}</td>
-          <td>{{ formatDate(movie.release_date) }}</td>
-          <td>{{ movie.harga }} </td> <!-- Menampilkan harga -->
-          <td>{{ movie.trailer_url }} </td> <!-- Menampilkan trailer URL -->
-          <td>{{ movie.jumlah_tiket }} </td> <!-- Menampilkan jumlah kursi -->
-          <td>
-            <button @click="editMovie(movie.id)" class="btn btn-warning">Edit</button>
-            <button @click="deleteMovie(movie.id)" class="btn btn-danger">Hapus</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </template>
 
 <script>
+import AppNavbar from '~/components/AppNavbar.vue';
+
 export default {
+  name: 'movies',
   middleware: ['admin'],
+  components: {
+    AppNavbar
+  },
   data() {
     return {
       movies: [],
@@ -102,5 +111,8 @@ export default {
 <style scoped>
 .table {
   width: 100%;
+}
+.mt-8{
+  margin-top: 100px;
 }
 </style>

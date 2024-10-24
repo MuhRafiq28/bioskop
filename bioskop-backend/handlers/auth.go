@@ -12,7 +12,7 @@ import (
     "os"
 )
 
-var jwtSecret = []byte(os.Getenv("mySuperSecretKey12345")) // Gunakan kunci rahasia dari variabel lingkungan
+var jwtSecret = []byte(os.Getenv("JWT_SECRET_KEY")) // Gunakan kunci rahasia dari variabel lingkungan
 
 // User struct
 type User struct {
@@ -160,50 +160,60 @@ func GetUserByID(db *sql.DB) echo.HandlerFunc {
 
 // UpdateUser function
 func UpdateUser(db *sql.DB) echo.HandlerFunc {
-    return func(c echo.Context) error {
-        // Ambil data pengguna dari token (yang disimpan di context oleh middleware)
-        loggedInUser, ok := c.Get("user").(*User)
-        if !ok || loggedInUser == nil {
-            return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized"})
-        }
+  return func(c echo.Context) error {
+      // Ambil data pengguna dari token (yang disimpan di context oleh middleware)
+      loggedInUser, ok := c.Get("user").(*User)
+      if !ok || loggedInUser == nil {
+          return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized"})
+      }
 
-        id := c.Param("id") // Mendapatkan ID dari parameter URL
-        if id != strconv.Itoa(loggedInUser.ID) && loggedInUser.Role != "admin" {
-            // Hanya pengguna itu sendiri atau admin yang bisa mengupdate
-            return c.JSON(http.StatusForbidden, map[string]string{"message": "Tidak memiliki izin untuk memperbarui data pengguna ini"})
-        }
+      id := c.Param("id") // Mendapatkan ID dari parameter URL
+      if id != strconv.Itoa(loggedInUser.ID) && loggedInUser.Role != "admin" {
+          // Hanya pengguna itu sendiri atau admin yang bisa mengupdate
+          return c.JSON(http.StatusForbidden, map[string]string{"message": "Tidak memiliki izin untuk memperbarui data pengguna ini"})
+      }
 
-        updatedUser := new(User)
-        if err := c.Bind(updatedUser); err != nil {
-            return c.JSON(http.StatusBadRequest, map[string]string{"message": "Permintaan tidak valid"})
-        }
+      updatedUser := new(User)
+      if err := c.Bind(updatedUser); err != nil {
+          return c.JSON(http.StatusBadRequest, map[string]string{"message": "Permintaan tidak valid"})
+      }
 
-        // Jika password di-update, hash password baru
-        var hashedPassword string
-        if updatedUser.Password != "" {
-            hashed, err := bcrypt.GenerateFromPassword([]byte(updatedUser.Password), bcrypt.DefaultCost)
-            if err != nil {
-                return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal meng-hash password"})
-            }
-            hashedPassword = string(hashed)
-        } else {
-            // Jika password tidak diubah, ambil password yang lama
-            var storedPassword string
-            err := db.QueryRow("SELECT password FROM users WHERE id=$1", id).Scan(&storedPassword)
-            if err != nil {
-                return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal mengambil password lama"})
-            }
-            hashedPassword = storedPassword
-        }
+      // Jika password di-update, hash password baru
+      var hashedPassword string
+      if updatedUser.Password != "" {
+          hashed, err := bcrypt.GenerateFromPassword([]byte(updatedUser.Password), bcrypt.DefaultCost)
+          if err != nil {
+              return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal meng-hash password"})
+          }
+          hashedPassword = string(hashed)
+      } else {
+          // Jika password tidak diubah, ambil password yang lama
+          var storedPassword string
+          err := db.QueryRow("SELECT password FROM users WHERE id=$1", id).Scan(&storedPassword)
+          if err != nil {
+              return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Gagal mengambil password lama"})
+          }
+          hashedPassword = storedPassword
+      }
 
-        // Update pengguna
-        _, err := db.Exec("UPDATE users SET name=$1, password=$2, role=$3, email=$4 WHERE id=$5",
-            updatedUser.Name, hashedPassword, updatedUser.Role, updatedUser.Email, id)
-        if err != nil {
-            return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error updating user"})
-        }
-        return c.JSON(http.StatusOK, map[string]string{"message": "User berhasil diperbarui"})
-    }
+      // Update pengguna
+      _, err := db.Exec("UPDATE users SET name=$1, password=$2, role=$3, email=$4 WHERE id=$5",
+          updatedUser.Name, hashedPassword, updatedUser.Role, updatedUser.Email, id)
+      if err != nil {
+          return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error updating user"})
+      }
+
+      // Ambil data pengguna yang baru saja diperbarui dari database
+      var updatedUserData User
+      err = db.QueryRow("SELECT id, name, email, role FROM users WHERE id=$1", id).
+          Scan(&updatedUserData.ID, &updatedUserData.Name, &updatedUserData.Email, &updatedUserData.Role)
+      if err != nil {
+          return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error fetching updated user"})
+      }
+
+      // Kembalikan data pengguna yang diperbarui
+      return c.JSON(http.StatusOK, updatedUserData)
+  }
 }
 
 // DeleteUser function

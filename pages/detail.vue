@@ -2,8 +2,8 @@
   <div class="container mb-5">
     <AppNavbar />
     <div class="container-detailTiket p-5 rounded-lg pl-5 pr-5 mt-8">
-      <div class="detailTiket">
-        <div class="img col-lg-6" @click="showTrailer">
+      <div class="detailTiket d-flex flex-md-nowrap flex-wrap">
+        <div class="img col-lg-6 position-relative" @click="showTrailer">
           <img
             v-if="movie.image_url"
             :src="`http://localhost:8080${movie.image_url}`"
@@ -11,15 +11,18 @@
             class="card-img-top"
             style="height: 400px; cursor: pointer;"
           />
+          <div v-if="movie.image_url" class="overlay">
+            <span class="overlay-text">Tonton Trailer</span>
+          </div>
           <span v-else class="text-center">Tidak ada gambar</span>
         </div>
         <div class="desTiket col-lg-6 d-flex flex-column align-items-center justify-content-center text-center">
-          <h1 class="display-3"><strong>{{ movie.title }}</strong></h1>
+          <h1 class="display-5"><strong>{{ movie.title }}</strong></h1>
           <h4>{{ movie.genre }}</h4>
           <p>{{ movie.description }}</p>
         </div>
       </div>
-      <div v-if="showVideo" class="video-container">
+      <div v-if="showVideo" class="video-container" ref="videoSection">
         <iframe
           width="100%"
           height="400"
@@ -44,8 +47,7 @@
 </template>
 
 <script>
-import AppNavbar from '~/components/AppNavbar.vue'; // Pastikan jalur file benar
-
+import AppNavbar from '~/components/AppNavbar.vue';
 export default {
   name: "detail",
   components: {
@@ -89,6 +91,10 @@ export default {
     showTrailer() {
       if (this.trailerUrl) {
         this.showVideo = true; // Tampilkan video
+        this.$nextTick(() => {
+          // Scroll ke bagian video
+          this.$refs.videoSection.scrollIntoView({ behavior: 'smooth' });
+        });
       } else {
         alert('Trailer tidak tersedia.');
       }
@@ -106,12 +112,44 @@ export default {
 }
 
 .detailTiket {
-  display: flex;
   justify-content: space-between;
+}
+
+.img {
+  position: relative;
 }
 
 .img img {
   height: auto;
+  transition: all 0.3s ease;
+}
+
+.img:hover img {
+  filter: brightness(50%);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.img:hover .overlay {
+  opacity: 1;
+}
+
+.overlay-text {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
 }
 
 .desTiket {

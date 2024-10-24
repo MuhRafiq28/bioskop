@@ -14,6 +14,15 @@ export const mutations = {
 };
 
 export const actions = {
+  nuxtClientInit({ commit }) {
+    const user = JSON.parse(localStorage.getItem('user'));
+    console.log('LocalStorage User:', user); // Tambahkan log ini untuk cek isi localStorage
+    if (user && user.id) {
+      commit('SET_USER', user);
+      console.log('User loaded into Vuex:', user); // Cek apakah user berhasil dimasukkan ke Vuex
+    }
+  },
+
   async login({ commit }, credentials) {
     try {
       const response = await this.$axios.post('/api/login', credentials);
@@ -26,6 +35,7 @@ export const actions = {
       console.error('Login failed:', error);
     }
   },
+
   logout({ commit }) {
     commit('CLEAR_USER');
     localStorage.removeItem('user');

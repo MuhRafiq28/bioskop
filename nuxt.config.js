@@ -31,6 +31,27 @@ export default {
       }
     }
   },
+  router: {
+    extendRoutes(routes, resolve) {
+      routes.push(
+        {
+          name: 'users',
+          path: '/admin/users',
+          component: resolve(__dirname, 'pages/admin/users.vue')
+        },
+        {
+          name: 'add-user',
+          path: '/admin/add-user',
+          component: resolve(__dirname, 'pages/admin/add-user.vue')
+        },
+        {
+          name: 'edit-user',
+          path: '/admin/edit-user',
+          component: resolve(__dirname, 'pages/admin/edit-user.vue')
+        }
+      );
+    }
+  },
   // Global CSS
   css: [],
 

@@ -5,12 +5,26 @@
       <p>Silahkan Login <strong>Masukkan Data Anda</strong></p>
       <form @submit.prevent="login">
         <div class="mb-3">
-          <input v-model="email" placeholder="Masukkan Email" type="email" id="email" required />
+          <input
+            v-model="email"
+            placeholder="Masukkan Email"
+            type="email"
+            id="email"
+            required
+          />
         </div>
         <div class="mb-3">
-          <input v-model="password" placeholder="Masukkan Password" type="password" id="password" required />
+          <input
+            v-model="password"
+            placeholder="Masukkan Password"
+            type="password"
+            id="password"
+            required
+          />
         </div>
-        <router-link to="/register"><button type="button" class="btn btn-danger mr-2">Daftar</button></router-link>
+        <router-link to="/register">
+          <button type="button" class="btn btn-danger mr-2">Daftar</button>
+        </router-link>
         <button type="submit" :disabled="loading" class="btn btn-success">Masuk</button>
         <div v-if="loading">Loading...</div>
         <div v-if="error" style="color: red;">{{ error }}</div>
@@ -31,41 +45,48 @@ export default {
   },
   methods: {
     async login() {
-  this.loading = true;
-  this.error = null;
-  try {
-    const response = await this.$axios.post('/login', {
-      email: this.email,
-      password: this.password,
-    });
+      this.loading = true;
+      this.error = null;
+      try {
+        // Kirim request ke backend
+        const response = await this.$axios.post('http://localhost:8080/login', {
+          email: this.email,
+          password: this.password,
+        });
 
-    const user = response.data;
-    if (user && user.id) {
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('token', user.token); // Simpan token
-      this.$store.commit('SET_USER', user);
+        const user = response.data;
 
-      // Set header default untuk Axios
-      this.$axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+        // Cek jika user dan id ada di respons
+        if (user && user.id) {
+          // Simpan user dan token di localStorage
+          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('token', user.token); // Simpan token
 
-      // Navigasi berdasarkan role
-      if (user.role === 'admin') {
-        this.$router.push('/homeadmin');
-      } else if (user.role === 'user') {
-        this.$router.push('/homeuser');
-      } else {
-        this.$router.push('/');
+          // Simpan user di Vuex store
+          this.$store.commit('SET_USER', user);
+
+          // Set header default untuk Axios dengan token
+          this.$axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
+
+          // Navigasi berdasarkan role
+          if (user.role === 'admin') {
+            this.$router.push('/homeadmin');
+          } else if (user.role === 'user') {
+            this.$router.push('/homeuser');
+          } else {
+            this.$router.push('/');
+          }
+        } else {
+          this.error = 'Data pengguna tidak valid';
+        }
+      } catch (error) {
+        // Tangkap error dari backend
+        this.error = error.response?.data?.message || 'Login gagal, coba lagi.';
+      } finally {
+        this.loading = false;
       }
-    } else {
-      this.error = 'Data pengguna tidak valid';
-    }
-  } catch (error) {
-    this.error = error.response?.data?.message || 'Login gagal, coba lagi.';
-  } finally {
-    this.loading = false;
-  }
-}
-  }
+    },
+  },
 };
 </script>
 

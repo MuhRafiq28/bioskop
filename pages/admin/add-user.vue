@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-5">
-    <h2 class="text-center">Edit Pengguna</h2>
-    <form @submit.prevent="updateUser">
+    <h2 class="text-center">Tambah Pengguna Baru</h2>
+    <form @submit.prevent="addUser">
       <div class="form-group">
         <label for="name">Nama:</label>
         <input type="text" id="name" class="form-control" v-model="user.name" required />
@@ -13,8 +13,8 @@
       </div>
 
       <div class="form-group">
-        <label for="password">Password (Kosongkan jika tidak ingin mengubah):</label>
-        <input type="password" id="password" class="form-control" v-model="user.password" />
+        <label for="password">Password:</label>
+        <input type="password" id="password" class="form-control" v-model="user.password" required />
       </div>
 
       <div class="form-group">
@@ -25,7 +25,7 @@
         </select>
       </div>
 
-      <button type="submit" class="btn btn-primary mt-3">Simpan Perubahan</button>
+      <button type="submit" class="btn btn-primary mt-3">Simpan</button>
     </form>
 
     <div v-if="message" class="alert alert-info mt-3">{{ message }}</div>
@@ -46,31 +46,18 @@ export default {
       message: ''
     };
   },
-  async mounted() {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await this.$axios.get('/users/' + this.$route.query.id, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      this.user = response.data;
-    } catch (error) {
-      this.message = 'Gagal mengambil data pengguna.';
-    }
-  },
   methods: {
-    async updateUser() {
+    async addUser() {
       try {
         const token = localStorage.getItem('token');
-        await this.$axios.put(`/users/${this.user.id}`, this.user, {
+        await this.$axios.post('/users', this.user, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        this.message = 'Pengguna berhasil diperbarui.';
+        this.message = 'Pengguna berhasil ditambahkan.';
       } catch (error) {
-        this.message = 'Gagal memperbarui pengguna.';
+        this.message = 'Gagal menambahkan pengguna.';
       }
     }
   }
